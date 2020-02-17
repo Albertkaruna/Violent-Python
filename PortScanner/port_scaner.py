@@ -4,6 +4,16 @@ import sys
 from threading import Thread,Semaphore
 
 screenlock=Semaphore(value=1)
+
+import nmap
+
+def nmap_scan(host,port):
+    scanner=nmap.PortScanner()
+    scanner.scan(host,port)
+    state=scanner[host]['tcp'][int(port)]['state']
+    name=scanner[host]['tcp'][int(port)]['name']
+    print('[+] '+host+' tcp/'+port+' - '+name+' - '+state)
+
 def conn_scan(host,port):
     try:
         skt=socket(AF_INET,SOCK_STREAM)
@@ -36,8 +46,8 @@ def port_scan(host,ports):
         print("[+] Scan result for {0}".format(target_ip))
     setdefaulttimeout(10)
     for port in ports:
-        # conn_scan(target_ip,int(port))
-        thread=Thread(target=conn_scan,args=(host,int(port)))
+        # nmap_scan(target_ip,port)
+        thread=Thread(target=nmap_scan,args=(host,port))
         thread.start()
 
 
